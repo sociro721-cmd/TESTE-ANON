@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- Rounded Background -->
+    <path
+        android:fillColor="#0D9488"
+        android:pathData="M50,0 C77.61,0 100,22.39 100,50 C100,77.61 77.61,100 50,100 C22.39,100 0,77.61 0,50 C0,22.39 22.39,0 50,0 Z" />
+    <!-- QR Code Center Shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,30h16v16H30zm4,4v8h8v-8zm-4,14h16v16H30zm4,4v8h8v-8zm14,-18h16v16H44zm4,4v8h8v-8zm-4,14h16v16H44zm4,4v8h8v-8zm14,-14h8v8h-8zm8,8h8v8h-8zm-8,8h8v8h-8z" />
+</vector>
