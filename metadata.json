@@ -1,0 +1,10 @@
+{
+  "name": "AnonQR - Bate-Papo Anônimo Privado por Link e QR Code",
+  "description": "Salas de bate-papo anônimo temporizadas com capacidade para até 10 pessoas, código de acesso seguro do anfitrião e links exclusivos fornecidos pelo dono.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

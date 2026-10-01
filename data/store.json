@@ -1,0 +1,316 @@
+{
+  "vouchers": [
+    [
+      "vch_demo_1h_6e25a4",
+      {
+        "token": "vch_demo_1h_6e25a4",
+        "durationMinutes": 60,
+        "label": "Voucher Demonstrativo (1 Hora)",
+        "createdAt": 1790637376219,
+        "status": "available",
+        "roomType": "group_temp",
+        "isPermanent": false,
+        "maxParticipants": 10,
+        "hasMultiChat": false
+      }
+    ]
+  ],
+  "purchaseOrders": [
+    [
+      "PED-3526",
+      {
+        "id": "PED-3526",
+        "catalogId": "group_temp_1h",
+        "roomType": "group_temp",
+        "roomTitle": "Sala de Grupo (Temporária)",
+        "durationLabel": "1 Hora (60m)",
+        "durationMinutes": 60,
+        "isPermanent": false,
+        "hasMultiChat": false,
+        "priceValue": 1.5,
+        "priceFormatted": "R$ 1,50",
+        "pixKey": "1e74e7ae-06e1-44d5-ba1c-21e5348dfbc3",
+        "customerName": "Validação RLS/FK",
+        "status": "pending",
+        "createdAt": 1790714620412
+      }
+    ]
+  ],
+  "purchaseCycles": [
+    [
+      "b9ae8c94-924b-4532-9690-c3504a559204",
+      {
+        "compraId": "b9ae8c94-924b-4532-9690-c3504a559204",
+        "userId": "13c80ff6-fcd3-4a89-a213-2863f8405415",
+        "salaId": "sala-iniciante-flash-06",
+        "durationMinutes": 60,
+        "isPermanent": false,
+        "activatedAt": 1790636517167,
+        "expiresAt": 1790640117167,
+        "status": "expired",
+        "updatedAt": 1790638940361
+      }
+    ]
+  ],
+  "rooms": [
+    [
+      "sala-aberta-1",
+      {
+        "id": "sala-aberta-1",
+        "name": "Lounge Principal (Bate-Papo Aberto)",
+        "description": "Espaço comunitário aberto para todos conversarem livremente sobre qualquer assunto de forma anônima.",
+        "category": "Bate-Papo Livre",
+        "icon": "Sparkles",
+        "color": "#06b6d4",
+        "accessKey": "open_key_1",
+        "creatorPasscode": "",
+        "createdAt": 1789692712500,
+        "durationMinutes": 0,
+        "expiresAt": 0,
+        "isPermanent": true,
+        "isOpenRoom": true,
+        "maxParticipants": 100,
+        "isCustom": false,
+        "messages": [
+          {
+            "id": "sys_o3y22ul",
+            "roomId": "sala-aberta-1",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#06b6d4",
+              "avatarIcon": "Shield"
+            },
+            "content": "Bem-vindo ao Lounge Principal (Bate-Papo Aberto)! Esta sala é aberta ao público para conversas anônimas e respeitosas.",
+            "timestamp": 1789692712500,
+            "type": "system"
+          }
+        ]
+      }
+    ],
+    [
+      "sala-aberta-2",
+      {
+        "id": "sala-aberta-2",
+        "name": "Desabafos & Histórias Anônimas",
+        "description": "Espaço acolhedor para compartilhar relatos, pedir conselhos e desabafar sem julgamentos.",
+        "category": "Apoio & Emoção",
+        "icon": "Lock",
+        "color": "#ec4899",
+        "accessKey": "open_key_2",
+        "creatorPasscode": "",
+        "createdAt": 1789692712500,
+        "durationMinutes": 0,
+        "expiresAt": 0,
+        "isPermanent": true,
+        "isOpenRoom": true,
+        "maxParticipants": 100,
+        "isCustom": false,
+        "messages": [
+          {
+            "id": "sys_em7pwzj",
+            "roomId": "sala-aberta-2",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#ec4899",
+              "avatarIcon": "Shield"
+            },
+            "content": "Bem-vindo ao Desabafos & Histórias Anônimas! Esta sala é aberta ao público para conversas anônimas e respeitosas.",
+            "timestamp": 1789692712500,
+            "type": "system"
+          }
+        ]
+      }
+    ],
+    [
+      "sala-aberta-3",
+      {
+        "id": "sala-aberta-3",
+        "name": "Mundo Tech, IA & Curiosidades",
+        "description": "Conversas e novidades sobre tecnologia, inteligência artificial, internet, jogos e futuro.",
+        "category": "Tecnologia",
+        "icon": "Terminal",
+        "color": "#10b981",
+        "accessKey": "open_key_3",
+        "creatorPasscode": "",
+        "createdAt": 1789692712501,
+        "durationMinutes": 0,
+        "expiresAt": 0,
+        "isPermanent": true,
+        "isOpenRoom": true,
+        "maxParticipants": 100,
+        "isCustom": false,
+        "messages": [
+          {
+            "id": "sys_6o2dotm",
+            "roomId": "sala-aberta-3",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#10b981",
+              "avatarIcon": "Shield"
+            },
+            "content": "Bem-vindo ao Mundo Tech, IA & Curiosidades! Esta sala é aberta ao público para conversas anônimas e respeitosas.",
+            "timestamp": 1789692712501,
+            "type": "system"
+          }
+        ]
+      }
+    ],
+    [
+      "sala-iniciante-flash-06",
+      {
+        "id": "sala-iniciante-flash-06",
+        "name": "Sala Rápida Flash",
+        "description": "1 Hora",
+        "category": "Sala de Grupo",
+        "icon": "ShieldCheck",
+        "color": "#10b981",
+        "accessKey": "key_2ac71fe816833cd78e0e62220bcf3cc4",
+        "creatorPasscode": "",
+        "createdAt": 1790636517167,
+        "durationMinutes": 60,
+        "expiresAt": 1790640117167,
+        "isPermanent": false,
+        "maxParticipants": 10,
+        "hasMultiChat": false,
+        "roomType": "group_temp",
+        "isCustom": true,
+        "compraId": "b9ae8c94-924b-4532-9690-c3504a559204",
+        "activatedAt": 1790636517167,
+        "messages": [
+          {
+            "id": "sys_xt1i9fz",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#10b981",
+              "avatarIcon": "Shield"
+            },
+            "content": "Acesso liberado! Duração contratada: 1h.",
+            "timestamp": 1790637515241,
+            "type": "system"
+          },
+          {
+            "id": "sys_cwkvc52",
+            "roomId": "sala-iniciante-flash-06",
+            "channelId": "chat_1",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#06b6d4",
+              "avatarIcon": "Shield"
+            },
+            "content": "Teste conectou-se (1/10 online).",
+            "timestamp": 1790638881503,
+            "type": "system"
+          },
+          {
+            "id": "sys_kzbu5d9",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#ef4444",
+              "avatarIcon": "Shield"
+            },
+            "content": "Teste saiu da sala (0/10 participantes).",
+            "timestamp": 1790638912424,
+            "type": "system"
+          },
+          {
+            "id": "sys_su9q9sq",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#ef4444",
+              "avatarIcon": "Shield"
+            },
+            "content": "Teste saiu da sala (0/10 participantes).",
+            "timestamp": 1790638915374,
+            "type": "system"
+          },
+          {
+            "id": "sys_64tra1h",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#ef4444",
+              "avatarIcon": "Shield"
+            },
+            "content": "Teste desconectou (0/10 participantes).",
+            "timestamp": 1790638921589,
+            "type": "system"
+          },
+          {
+            "id": "sys_upfyazg",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#ef4444",
+              "avatarIcon": "Shield"
+            },
+            "content": "Teste desconectou (0/10 participantes).",
+            "timestamp": 1790638969144,
+            "type": "system"
+          }
+        ],
+        "knownParticipants": {
+          "user_kxqoketmuluaw3u": {
+            "id": "user_kxqoketmuluaw3u",
+            "name": "Teste",
+            "avatarColor": "#3b82f6",
+            "avatarIcon": "Compass",
+            "firstJoinedAt": 1790638881502,
+            "lastSeenAt": 1790638941502
+          }
+        },
+        "isExpired": true
+      }
+    ],
+    [
+      "b9ae8c94-924b-4532-9690-c3504a559204",
+      {
+        "id": "sala-iniciante-flash-06",
+        "name": "Sala Rápida Flash",
+        "description": "1 Hora",
+        "category": "Sala de Grupo",
+        "icon": "ShieldCheck",
+        "color": "#10b981",
+        "accessKey": "key_2ac71fe816833cd78e0e62220bcf3cc4",
+        "creatorPasscode": "",
+        "createdAt": 1790636517167,
+        "durationMinutes": 60,
+        "expiresAt": 1790640117167,
+        "isPermanent": false,
+        "maxParticipants": 10,
+        "hasMultiChat": false,
+        "roomType": "group_temp",
+        "isCustom": true,
+        "compraId": "b9ae8c94-924b-4532-9690-c3504a559204",
+        "activatedAt": 1790636517167,
+        "messages": [
+          {
+            "id": "sys_xt1i9fz",
+            "roomId": "sala-iniciante-flash-06",
+            "sender": {
+              "id": "system",
+              "name": "Sistema AnonQR",
+              "avatarColor": "#10b981",
+              "avatarIcon": "Shield"
+            },
+            "content": "Acesso liberado! Duração contratada: 1h.",
+            "timestamp": 1790637515241,
+            "type": "system"
+          }
+        ],
+        "isExpired": true
+      }
+    ]
+  ]
+}
