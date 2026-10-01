@@ -100,24 +100,39 @@ object SupabaseManager {
             .decodeSingle<UserProfile>()
     }
 
-    // Define / Update Nickname via database RPC
+    // Define / Update Nickname via direct partial UPDATE (safe from overwriting plan, premium or credits)
     suspend fun definirNickUsuario(nick: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            client.postgrest.rpc(
-                function = "definir_nick_usuario",
-                parameters = buildJsonObject {
-                    put("novo_nick", nick.trim())
-                }
-            )
-            // Refresh profile after successful nick registration
             val userId = client.auth.currentSessionOrNull()?.user?.id 
-            if (userId != null) {
-                val profile = fetchProfile(userId)
-                withContext(Dispatchers.Main) {
-                    userProfileState.value = profile
+                ?: throw Exception("Usuário não autenticado.")
+            
+            val trimmedNick = nick.trim()
+
+            // Perform partial update on 'profiles' table targeting exclusively the 'nick' column
+            client.postgrest["profiles"].update(
+                buildJsonObject {
+                    put("nick", trimmedNick)
+                }
+            ) {
+                filter {
+                    eq("id", userId)
                 }
             }
-            Result.success(nick)
+
+            // Update local state without losing any fields (plan, premium, credits)
+            val currentProfile = userProfileState.value
+            if (currentProfile != null && currentProfile.id == userId) {
+                withContext(Dispatchers.Main) {
+                    userProfileState.value = currentProfile.copy(nick = trimmedNick)
+                }
+            } else {
+                // If state is empty, fetch the fresh actual profile from DB to preserve true values
+                val freshProfile = fetchProfile(userId)
+                withContext(Dispatchers.Main) {
+                    userProfileState.value = freshProfile
+                }
+            }
+            Result.success(trimmedNick)
         } catch (e: Exception) {
             Result.failure(e)
         }
