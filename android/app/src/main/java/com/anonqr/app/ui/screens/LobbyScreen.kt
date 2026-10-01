@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -82,7 +82,7 @@ fun LobbyScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.Sparkles, contentDescription = null, tint = EmeraldLight, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Default.Star, contentDescription = null, tint = EmeraldLight, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "Conversas Anônimas • Salas Privadas • Jogos Presenciais",

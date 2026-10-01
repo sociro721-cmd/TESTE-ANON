@@ -63,7 +63,7 @@ fun AnonQrMascot(
             // 1. Antena
             val antennaPath = Path().apply {
                 moveTo(100f * scale, 50f * scale)
-                quadraticTo(102f * scale, 30f * scale, 105f * scale, 15f * scale)
+                quadraticBezierTo(102f * scale, 30f * scale, 105f * scale, 15f * scale)
             }
             drawPath(
                 path = antennaPath,
@@ -85,7 +85,7 @@ fun AnonQrMascot(
             val footPathLeft = Path().apply {
                 moveTo(85f * scale, 160f * scale)
                 lineTo(80f * scale, 185f * scale)
-                quadraticTo(70f * scale, 190f * scale, 88f * scale, 192f * scale)
+                quadraticBezierTo(70f * scale, 190f * scale, 88f * scale, 192f * scale)
                 lineTo(95f * scale, 160f * scale)
             }
             drawPath(footPathLeft, color = EmeraldDark)
@@ -93,7 +93,7 @@ fun AnonQrMascot(
             val footPathRight = Path().apply {
                 moveTo(115f * scale, 160f * scale)
                 lineTo(120f * scale, 185f * scale)
-                quadraticTo(130f * scale, 190f * scale, 112f * scale, 192f * scale)
+                quadraticBezierTo(130f * scale, 190f * scale, 112f * scale, 192f * scale)
                 lineTo(105f * scale, 160f * scale)
             }
             drawPath(footPathRight, color = EmeraldDark)
@@ -108,14 +108,14 @@ fun AnonQrMascot(
             // 4. Braços e Mãos Acenando
             val armLeft = Path().apply {
                 moveTo(75f * scale, 135f * scale)
-                quadraticTo(55f * scale, 130f * scale, 48f * scale, 115f * scale)
+                quadraticBezierTo(55f * scale, 130f * scale, 48f * scale, 115f * scale)
             }
             drawPath(armLeft, color = EmeraldPrimary, style = Stroke(width = 5f * scale))
             drawCircle(color = EmeraldLight, radius = 5f * scale, center = Offset(48f * scale, 115f * scale))
 
             val armRight = Path().apply {
                 moveTo(125f * scale, 135f * scale)
-                quadraticTo(145f * scale, 140f * scale, 152f * scale, 150f * scale)
+                quadraticBezierTo(145f * scale, 140f * scale, 152f * scale, 150f * scale)
             }
             drawPath(armRight, color = EmeraldPrimary, style = Stroke(width = 5f * scale))
             drawCircle(color = EmeraldLight, radius = 5f * scale, center = Offset(152f * scale, 150f * scale))
@@ -123,10 +123,10 @@ fun AnonQrMascot(
             // 5. Cabeça Alienígena Oval
             val headPath = Path().apply {
                 moveTo(100f * scale, 45f * scale)
-                quadraticTo(155f * scale, 45f * scale, 155f * scale, 95f * scale)
-                quadraticTo(155f * scale, 135f * scale, 100f * scale, 135f * scale)
-                quadraticTo(45f * scale, 135f * scale, 45f * scale, 95f * scale)
-                quadraticTo(45f * scale, 45f * scale, 100f * scale, 45f * scale)
+                quadraticBezierTo(155f * scale, 45f * scale, 155f * scale, 95f * scale)
+                quadraticBezierTo(155f * scale, 135f * scale, 100f * scale, 135f * scale)
+                quadraticBezierTo(45f * scale, 135f * scale, 45f * scale, 95f * scale)
+                quadraticBezierTo(45f * scale, 45f * scale, 100f * scale, 45f * scale)
             }
             drawPath(
                 path = headPath,
@@ -167,7 +167,7 @@ fun AnonQrMascot(
             // 7. Sorriso Simpático
             val mouthPath = Path().apply {
                 moveTo(90f * scale, 118f * scale)
-                quadraticTo(100f * scale, 126f * scale, 110f * scale, 118f * scale)
+                quadraticBezierTo(100f * scale, 126f * scale, 110f * scale, 118f * scale)
             }
             drawPath(mouthPath, color = Color(0xFF064E3B), style = Stroke(width = 3f * scale))
 
