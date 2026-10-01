@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.AnonQr" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Status bar configuration -->
+    <style name="Theme.AnonQr" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
         <item name="android:statusBarColor">#0D9488</item>
+        <item name="android:navigationBarColor">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
