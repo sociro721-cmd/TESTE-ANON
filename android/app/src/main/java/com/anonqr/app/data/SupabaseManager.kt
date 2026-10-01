@@ -10,6 +10,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.gotrue.user.updateUser
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
@@ -17,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import androidx.compose.runtime.mutableStateOf
 
 object SupabaseManager {
@@ -57,14 +60,19 @@ object SupabaseManager {
                 this.email = email
                 this.password = password
             }
-            val userId = client.auth.currentSessionOrNull()?.user?.id 
+            val session = client.auth.currentSessionOrNull()
+            val userId = session?.user?.id 
                 ?: throw Exception("Falha ao recuperar sessão do usuário.")
             
             val profile = fetchProfile(userId)
+            val nickStr = session.user?.userMetadata?.get("nick")?.jsonPrimitive?.contentOrNull
+                ?: session.user?.userMetadata?.get("username")?.jsonPrimitive?.contentOrNull
+                
+            val updatedProfile = profile.copy(nick = nickStr)
             withContext(Dispatchers.Main) {
-                userProfileState.value = profile
+                userProfileState.value = updatedProfile
             }
-            Result.success(profile)
+            Result.success(updatedProfile)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -100,36 +108,36 @@ object SupabaseManager {
             .decodeSingle<UserProfile>()
     }
 
-    // Define / Update Nickname via direct partial UPDATE (safe from overwriting plan, premium or credits)
+    // Define / Update Nickname via Supabase Auth userMetadata (safe from any database column/schema issue)
     suspend fun definirNickUsuario(nick: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val userId = client.auth.currentSessionOrNull()?.user?.id 
+            val session = client.auth.currentSessionOrNull()
+            val userId = session?.user?.id 
                 ?: throw Exception("Usuário não autenticado.")
             
             val trimmedNick = nick.trim()
 
-            // Perform partial update on 'profiles' table targeting exclusively the 'nick' column
-            client.postgrest["profiles"].update(
-                buildJsonObject {
+            // Update user metadata in Supabase Auth directly
+            client.auth.updateUser {
+                userMetadata = buildJsonObject {
                     put("nick", trimmedNick)
-                }
-            ) {
-                filter {
-                    eq("id", userId)
+                    put("username", trimmedNick)
                 }
             }
 
-            // Update local state without losing any fields (plan, premium, credits)
+            // Update local state by copying the new nickname
             val currentProfile = userProfileState.value
             if (currentProfile != null && currentProfile.id == userId) {
+                val updatedProfile = currentProfile.copy(nick = trimmedNick)
                 withContext(Dispatchers.Main) {
-                    userProfileState.value = currentProfile.copy(nick = trimmedNick)
+                    userProfileState.value = updatedProfile
                 }
             } else {
-                // If state is empty, fetch the fresh actual profile from DB to preserve true values
-                val freshProfile = fetchProfile(userId)
+                // Fetch profile and override with new nick metadata
+                val profile = fetchProfile(userId)
+                val updatedProfile = profile.copy(nick = trimmedNick)
                 withContext(Dispatchers.Main) {
-                    userProfileState.value = freshProfile
+                    userProfileState.value = updatedProfile
                 }
             }
             Result.success(trimmedNick)
@@ -145,10 +153,14 @@ object SupabaseManager {
             val userId = session?.user?.id
             if (userId != null) {
                 val profile = fetchProfile(userId)
+                val nickStr = session.user?.userMetadata?.get("nick")?.jsonPrimitive?.contentOrNull
+                    ?: session.user?.userMetadata?.get("username")?.jsonPrimitive?.contentOrNull
+                
+                val updatedProfile = profile.copy(nick = nickStr)
                 withContext(Dispatchers.Main) {
-                    userProfileState.value = profile
+                    userProfileState.value = updatedProfile
                 }
-                profile
+                updatedProfile
             } else {
                 null
             }
