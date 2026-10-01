@@ -12,6 +12,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
@@ -42,10 +43,6 @@ object SupabaseManager {
             client.auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
-                userMetadata = buildJsonObject {
-                    put("name", name.trim())
-                    put("full_name", name.trim())
-                }
             }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -106,7 +103,7 @@ object SupabaseManager {
     // Define / Update Nickname via database RPC
     suspend fun definirNickUsuario(nick: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val response = client.postgrest.rpc(
+            client.postgrest.rpc(
                 function = "definir_nick_usuario",
                 parameters = buildJsonObject {
                     put("novo_nick", nick.trim())
@@ -130,8 +127,9 @@ object SupabaseManager {
     suspend fun restoreSession(): UserProfile? = withContext(Dispatchers.IO) {
         try {
             val session = client.auth.currentSessionOrNull()
-            if (session != null) {
-                val profile = fetchProfile(session.user.id)
+            val userId = session?.user?.id
+            if (userId != null) {
+                val profile = fetchProfile(userId)
                 withContext(Dispatchers.Main) {
                     userProfileState.value = profile
                 }
