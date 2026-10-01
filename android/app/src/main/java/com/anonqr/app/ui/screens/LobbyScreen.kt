@@ -70,126 +70,58 @@ fun LobbyScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Identity context header card
-                    Surface(
-                        color = DarkCard,
-                        shape = RoundedCornerShape(12.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .background(Color(android.graphics.Color.parseColor(currentUser.avatarColor)), CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = if (isRegistered) "👤" else "👽",
-                                        color = TextWhite,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Column {
-                                    Text(
-                                        text = currentUser.name,
-                                        color = TextWhite,
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = if (isRegistered) "@${currentUser.nick ?: "sem_nick"}" else "Modo Visitante",
-                                        color = if (isRegistered) EmeraldLight else TextMuted,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
-                            
-                            Button(
-                                onClick = { if (isRegistered) onLogoutClick() else onLoginClick() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isRegistered) RoseAccent.copy(alpha = 0.2f) else EmeraldPrimary
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text(
-                                    text = if (isRegistered) "Sair" else "Entrar",
-                                    color = if (isRegistered) RoseAccent else TextWhite,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-
-                    // Mascote ET no topo no Mobile
+                    // Mascote e Títulos
                     AnonQrMascot(
                         variant = MascotVariant.HERO,
-                        size = 130.dp,
+                        size = 100.dp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    // Badge de Hierarquia Exigida
-                    Surface(
-                        color = Color(0x2510B981),
-                        shape = CircleShape,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldPrimary.copy(alpha = 0.4f))
+                    Text(
+                        text = "Conversar",
+                        color = TextWhite,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Black
+                    )
+
+                    Text(
+                        text = "Converse sem mostrar quem você é.",
+                        color = TextMuted,
+                        fontSize = 14.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // ÁREA DE AÇÕES
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Icon(Icons.Default.Star, contentDescription = null, tint = EmeraldLight, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Conversas Anônimas • Salas Privadas • Jogos Presenciais",
-                                color = EmeraldLight,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Encontrar alguém (Visual placeholder)
+                            Text("🔎 Encontrar alguém", fontWeight = FontWeight.Bold, color = TextWhite)
+                            Text("Digite @nick para encontrar alguém", color = TextMuted, fontSize = 12.sp)
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            // Entrar por QR (Ação)
+                            Button(
+                                onClick = onOpenScannerClick,
+                                colors = ButtonDefaults.buttonColors(containerColor = EmeraldPrimary),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("📷 Entrar por QR Code")
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Título Principal
-                    Text(
-                        text = "Converse sem mostrar quem você é.",
-                        color = TextWhite,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Black,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Texto de Apoio
-                    Text(
-                        text = "Entre em salas, converse, jogue e compartilhe sem precisar se identificar.",
-                        color = TextMuted,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Campo de Busca
+                    // Campo de Busca de Salas (Existing)
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Pesquisar sala ou @nick...", color = TextDark, fontSize = 12.sp) },
+                        placeholder = { Text("Pesquisar salas...", color = TextDark, fontSize = 12.sp) },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextMuted) },
                         singleLine = true,
                         shape = RoundedCornerShape(16.dp),
@@ -203,24 +135,7 @@ fun LobbyScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Botão Escanear QR Code CTA
-                    Button(
-                        onClick = onOpenScannerClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldPrimary),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = TextWhite)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Escanear QR Code", color = TextWhite, fontWeight = FontWeight.Bold)
-                    }
                 }
             }
         }

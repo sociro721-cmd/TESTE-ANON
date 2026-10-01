@@ -37,7 +37,9 @@ class MainActivity : ComponentActivity() {
                 var activeUser by remember { mutableStateOf<AnonymousUser>(localVisitor) }
                 var isRegistered by remember { mutableStateOf(false) }
 
-                // Restore active Supabase session dynamically on start
+                val navController = rememberNavController()
+                
+                // Fetch list of rooms dynamically from production database
                 LaunchedEffect(Unit) {
                     val profile = SupabaseManager.restoreSession()
                     if (profile != null) {
@@ -64,35 +66,95 @@ class MainActivity : ComponentActivity() {
                     rooms = SupabaseManager.getRooms()
                 }
 
-                NavHost(navController = navController, startDestination = "lobby") {
-                    composable("lobby") {
-                        LobbyScreen(
-                            rooms = rooms,
-                            currentUser = activeUser,
-                            isRegistered = isRegistered,
-                            onRoomClick = { room ->
-                                selectedRoom = room
-                                navController.navigate("chat/${room.id}")
-                            },
-                            onTruthOrDareClick = { navController.navigate("truth_or_dare") },
-                            onImpostorClick = { navController.navigate("impostor") },
-                            onMuralClick = { navController.navigate("confessions") },
-                            onOpenScannerClick = {
-                                // CameraX / MLKit QR Scanner
-                            },
-                            onLoginClick = {
-                                navController.navigate("login")
-                            },
-                            onLogoutClick = {
-                                scope.launch {
-                                    SupabaseManager.signOut()
-                                    val visitor = IdentityStorage.getOrCreateUser(this@MainActivity)
-                                    activeUser = visitor
-                                    isRegistered = false
-                                }
+                Scaffold(
+                    bottomBar = {
+                        NavigationBar {
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentDestination = navBackStackEntry?.destination
+                            val items = listOf(
+                                com.anonqr.app.ui.navigation.Screen.Conversar,
+                                com.anonqr.app.ui.navigation.Screen.Conversas,
+                                com.anonqr.app.ui.navigation.Screen.Perfil
+                            )
+                            items.forEach { screen ->
+                                NavigationBarItem(
+                                    icon = { Icon(screen.icon, contentDescription = null) },
+                                    label = { Text(screen.title) },
+                                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                    onClick = {
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "conversar",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("conversar") {
+                            LobbyScreen(
+                                rooms = rooms,
+                                currentUser = activeUser,
+                                isRegistered = isRegistered,
+                                onRoomClick = { room ->
+                                    selectedRoom = room
+                                    navController.navigate("chat/${room.id}")
+                                },
+                                onTruthOrDareClick = { navController.navigate("truth_or_dare") },
+                                onImpostorClick = { navController.navigate("impostor") },
+                                onMuralClick = { navController.navigate("confessions") },
+                                onOpenScannerClick = { /* Scanner */ },
+                                onLoginClick = { navController.navigate("login") },
+                                onLogoutClick = {
+                                    scope.launch {
+                                        SupabaseManager.signOut()
+                                        val visitor = IdentityStorage.getOrCreateUser(this@MainActivity)
+                                        activeUser = visitor
+                                        isRegistered = false
+                                    }
+                                }
+                            )
+                        }
+                        
+                        composable("conversas") {
+                            // Tela de conversas vazia
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("Conversas", style = MaterialTheme.typography.headlineMedium)
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Suas conversas privadas aparecerão aqui.")
+                            }
+                        }
+
+                        composable("perfil") {
+                             // Perfil screen implementation
+                             Column(modifier = Modifier.padding(16.dp)) {
+                                 Text("Perfil", style = MaterialTheme.typography.headlineMedium)
+                                 Spacer(modifier = Modifier.height(16.dp))
+                                 Text("Nome: ${activeUser.name}")
+                                 Text("Nick: ${activeUser.nick ?: "Não definido"}")
+                                 Spacer(modifier = Modifier.height(16.dp))
+                                 Button(onClick = { /* Minhas compras */ }, modifier = Modifier.fillMaxWidth()) {
+                                     Text("Minhas compras")
+                                 }
+                                 Spacer(modifier = Modifier.height(8.dp))
+                                 Button(onClick = { /* Sair */ }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
+                                     Text("Sair")
+                                 }
+                             }
+                        }
+                        
+                        // Remaining routes: chat, jogos, confissoes, etc.
+                        composable("chat/{roomId}") { /* ... */ }
+                        composable("truth_or_dare") { TruthOrDareScreen(/* ... */) }
+                        composable("impostor") { ImpostorGameScreen(/* ... */) }
+                        composable("confessions") { ConfessionsScreen(/* ... */) }
 
                     composable("login") {
                         LoginScreen(
