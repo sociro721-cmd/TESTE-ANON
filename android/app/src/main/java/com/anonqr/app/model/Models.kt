@@ -13,6 +13,17 @@ data class AnonymousUser(
 )
 
 @Serializable
+data class UserProfile(
+    val id: String,
+    val name: String? = null,
+    val nick: String? = null,
+    val email: String? = null,
+    val plan: String = "free",
+    val premium: Boolean = false,
+    val credits: Int = 0
+)
+
+@Serializable
 data class ThemedRoom(
     val id: String,
     val name: String,

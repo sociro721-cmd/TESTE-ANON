@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anonqr.app.model.ThemedRoom
+import com.anonqr.app.model.AnonymousUser
 import com.anonqr.app.ui.components.AnonQrMascot
 import com.anonqr.app.ui.components.MascotVariant
 import com.anonqr.app.ui.theme.*
@@ -35,11 +36,15 @@ import com.anonqr.app.ui.theme.*
 @Composable
 fun LobbyScreen(
     rooms: List<ThemedRoom>,
+    currentUser: AnonymousUser,
+    isRegistered: Boolean,
     onRoomClick: (ThemedRoom) -> Unit,
     onTruthOrDareClick: () -> Unit,
     onImpostorClick: () -> Unit,
     onMuralClick: () -> Unit,
-    onOpenScannerClick: () -> Unit
+    onOpenScannerClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
@@ -65,6 +70,69 @@ fun LobbyScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    // Identity context header card
+                    Surface(
+                        color = DarkCard,
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(Color(android.graphics.Color.parseColor(currentUser.avatarColor)), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (isRegistered) "👤" else "👽",
+                                        color = TextWhite,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        text = currentUser.name,
+                                        color = TextWhite,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = if (isRegistered) "@${currentUser.nick ?: "sem_nick"}" else "Modo Visitante",
+                                        color = if (isRegistered) EmeraldLight else TextMuted,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                            
+                            Button(
+                                onClick = { if (isRegistered) onLogoutClick() else onLoginClick() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isRegistered) RoseAccent.copy(alpha = 0.2f) else EmeraldPrimary
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Text(
+                                    text = if (isRegistered) "Sair" else "Entrar",
+                                    color = if (isRegistered) RoseAccent else TextWhite,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
                     // Mascote ET no topo no Mobile
                     AnonQrMascot(
                         variant = MascotVariant.HERO,

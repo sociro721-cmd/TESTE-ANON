@@ -1,22 +1,27 @@
 package com.anonqr.app.data
 
 import com.anonqr.app.model.AnonymousUser
+import com.anonqr.app.model.UserProfile
 import com.anonqr.app.model.Confession
 import com.anonqr.app.model.ConfessionComment
 import com.anonqr.app.model.ThemedRoom
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import androidx.compose.runtime.mutableStateOf
 
 object SupabaseManager {
 
-    private const val SUPABASE_URL = "https://your-supabase-project.supabase.co"
-    private const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    private const val SUPABASE_URL = "https://srclzysflycxyedgmwaz.supabase.co"
+    private const val SUPABASE_ANON_KEY = "sb_publishable_3Mbqn0oAgUajihKqht4YpA_WwKeqBCX"
 
     val client: SupabaseClient by lazy {
         createSupabaseClient(
@@ -24,19 +29,131 @@ object SupabaseManager {
             supabaseKey = SUPABASE_ANON_KEY
         ) {
             install(Postgrest)
+            install(Auth)
         }
     }
 
+    // Composable-friendly State of the active authenticated user profile
+    val userProfileState = mutableStateOf<UserProfile?>(null)
+
+    // Supabase Auth Action: Sign Up
+    suspend fun signUp(email: String, password: String, name: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            client.auth.signUpWith(Email) {
+                this.email = email
+                this.password = password
+                userMetadata = buildJsonObject {
+                    put("name", name.trim())
+                    put("full_name", name.trim())
+                }
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Supabase Auth Action: Sign In
+    suspend fun signIn(email: String, password: String): Result<UserProfile> = withContext(Dispatchers.IO) {
+        try {
+            client.auth.signInWith(Email) {
+                this.email = email
+                this.password = password
+            }
+            val userId = client.auth.currentSessionOrNull()?.user?.id 
+                ?: throw Exception("Falha ao recuperar sessão do usuário.")
+            
+            val profile = fetchProfile(userId)
+            withContext(Dispatchers.Main) {
+                userProfileState.value = profile
+            }
+            Result.success(profile)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Supabase Auth Action: Sign Out
+    suspend fun signOut(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            client.auth.signOut()
+            withContext(Dispatchers.Main) {
+                userProfileState.value = null
+            }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Supabase Auth Action: Password Reset (Recuperar Senha)
+    suspend fun resetPassword(email: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            client.auth.resetPasswordForEmail(email.trim())
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Fetch Profile by ID from public.profiles
+    suspend fun fetchProfile(userId: String): UserProfile = withContext(Dispatchers.IO) {
+        client.postgrest["profiles"]
+            .select { filter { eq("id", userId) } }
+            .decodeSingle<UserProfile>()
+    }
+
+    // Define / Update Nickname via database RPC
+    suspend fun definirNickUsuario(nick: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val response = client.postgrest.rpc(
+                function = "definir_nick_usuario",
+                parameters = buildJsonObject {
+                    put("novo_nick", nick.trim())
+                }
+            )
+            // Refresh profile after successful nick registration
+            val userId = client.auth.currentSessionOrNull()?.user?.id 
+            if (userId != null) {
+                val profile = fetchProfile(userId)
+                withContext(Dispatchers.Main) {
+                    userProfileState.value = profile
+                }
+            }
+            Result.success(nick)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Restore Session on Launch if valid
+    suspend fun restoreSession(): UserProfile? = withContext(Dispatchers.IO) {
+        try {
+            val session = client.auth.currentSessionOrNull()
+            if (session != null) {
+                val profile = fetchProfile(session.user.id)
+                withContext(Dispatchers.Main) {
+                    userProfileState.value = profile
+                }
+                profile
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // Fetch rooms from DB with real table 'salas'
     suspend fun getRooms(): List<ThemedRoom> = withContext(Dispatchers.IO) {
         try {
-            client.postgrest["salas_produtos"].select().decodeList<ThemedRoom>()
+            client.postgrest["salas"].select().decodeList<ThemedRoom>()
         } catch (e: Exception) {
             // Default Fallback Rooms matching Web Version
             listOf(
-                ThemedRoom("geral", "Papo Furado & Geral", "Conversa livre e sem compromisso sobre qualquer assunto.", "Geral", "Sparkles"),
-                ThemedRoom("desabafos", "Desabafos & Apoio", "Um espaço seguro para compartilhar o que está no peito.", "Apoio & Emoção", "Lock"),
-                ThemedRoom("cinema", "Cine & Séries", "Discussão sem spoilers sobre os lançamentos da semana.", "Cultura & Arte", "Film"),
-                ThemedRoom("tech", "Devs & Tecnologia", "Código, café, IA, gadgets e automações.", "Tecnologia", "Terminal")
+                ThemedRoom("sala-aberta-1", "Lounge Principal (Bate-Papo Aberto)", "Espaço comunitário aberto para todos conversarem livremente sobre qualquer assunto de forma anônima.", "Bate-Papo Livre", "Sparkles"),
+                ThemedRoom("sala-aberta-2", "Desabafos & Histórias Anônimas", "Espaço acolhedor para compartilhar relatos, pedir conselhos e desabafar sem julgamentos.", "Apoio & Emoção", "Lock"),
+                ThemedRoom("sala-aberta-3", "Mundo Tech, IA & Curiosidades", "Conversas e novidades sobre tecnologia, inteligência artificial, internet, jogos e futuro.", "Tecnologia", "Terminal")
             )
         }
     }
