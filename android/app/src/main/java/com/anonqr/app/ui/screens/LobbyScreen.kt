@@ -361,15 +361,27 @@ fun LobbyScreen(
             }
         }
 
-        items(rooms.filter { it.name.contains(searchQuery, ignoreCase = true) }.size) { index ->
-            val room = rooms[index]
+        val filteredRooms = rooms.filter {
+            it.name.contains(searchQuery, ignoreCase = true) ||
+            it.category.contains(searchQuery, ignoreCase = true) ||
+            it.description.contains(searchQuery, ignoreCase = true)
+        }
+
+        items(filteredRooms.size) { index ->
+            val room = filteredRooms[index]
+            val parsedColor = try {
+                Color(android.graphics.Color.parseColor(room.color))
+            } catch (e: Exception) {
+                EmeraldPrimary
+            }
+
             Card(
                 colors = CardDefaults.cardColors(containerColor = DarkCard),
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                border = androidx.compose.foundation.BorderStroke(1.dp, parsedColor.copy(alpha = 0.5f)),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
                     .clickable { onRoomClick(room) }
             ) {
                 Row(
@@ -380,19 +392,78 @@ fun LobbyScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(room.name, color = TextWhite, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = room.name,
+                                color = TextWhite,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                            if (room.activeParticipantsCount > 0) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(Color(0xFF10B981), CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${room.activeParticipantsCount} online",
+                                    color = Color(0xFF10B981),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(room.description, color = TextMuted, fontSize = 11.sp)
+                        
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                color = parsedColor.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = room.category,
+                                    color = parsedColor,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                            if (room.hasPasscode) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "Protegida",
+                                    tint = RoseAccent,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(
+                                    text = "Senha",
+                                    color = RoseAccent,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
                     Surface(
-                        color = Color(0x2010B981),
+                        color = parsedColor.copy(alpha = 0.2f),
                         shape = CircleShape
                     ) {
                         Text(
                             text = "Entrar",
-                            color = EmeraldLight,
+                            color = parsedColor,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }

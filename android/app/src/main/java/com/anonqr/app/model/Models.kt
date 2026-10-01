@@ -1,6 +1,7 @@
 package com.anonqr.app.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class AnonymousUser(
@@ -29,13 +30,14 @@ data class ThemedRoom(
     val name: String,
     val description: String,
     val category: String,
-    val iconName: String,
+    @SerialName("icon") val iconName: String,
     val isEncrypted: Boolean = true,
     val isPermanent: Boolean = true,
     val isOpenRoom: Boolean = true,
-    val activeParticipantsCount: Int = 0,
+    @SerialName("onlineCount") val activeParticipantsCount: Int = 0,
     val expiresAt: Long? = null,
-    val hasPasscode: Boolean = false
+    val hasPasscode: Boolean = false,
+    @SerialName("color") val color: String = "#3b82f6"
 )
 
 @Serializable

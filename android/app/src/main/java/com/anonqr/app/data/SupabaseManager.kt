@@ -19,12 +19,18 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.Json
 import androidx.compose.runtime.mutableStateOf
 
 object SupabaseManager {
 
     private const val SUPABASE_URL = "https://srclzysflycxyedgmwaz.supabase.co"
     private const val SUPABASE_ANON_KEY = "sb_publishable_3Mbqn0oAgUajihKqht4YpA_WwKeqBCX"
+
+    private val httpClient = okhttp3.OkHttpClient.Builder()
+        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .build()
 
     val client: SupabaseClient by lazy {
         createSupabaseClient(
@@ -168,16 +174,32 @@ object SupabaseManager {
         }
     }
 
-    // Fetch rooms from DB with real table 'salas'
+    // Fetch rooms from the real Express API `/api/rooms` matching the Web version
     suspend fun getRooms(): List<ThemedRoom> = withContext(Dispatchers.IO) {
         try {
-            client.postgrest["salas"].select().decodeList<ThemedRoom>()
+            val request = okhttp3.Request.Builder()
+                .url("https://anonqr.app/api/rooms")
+                .build()
+            
+            httpClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val bodyString = response.body?.string()
+                    if (!bodyString.isNullOrEmpty()) {
+                        val jsonParser = Json { ignoreUnknownKeys = true; isLenient = true }
+                        val roomsList = jsonParser.decodeFromString<List<ThemedRoom>>(bodyString)
+                        println("[Rooms] API /api/rooms carregada com sucesso — ${roomsList.size} salas")
+                        return@withContext roomsList
+                    }
+                }
+            }
+            throw Exception("Response not successful or empty body")
         } catch (e: Exception) {
+            println("[Rooms] API /api/rooms falhou — usando fallback local")
             // Default Fallback Rooms matching Web Version
             listOf(
-                ThemedRoom("sala-aberta-1", "Lounge Principal (Bate-Papo Aberto)", "Espaço comunitário aberto para todos conversarem livremente sobre qualquer assunto de forma anônima.", "Bate-Papo Livre", "Sparkles"),
-                ThemedRoom("sala-aberta-2", "Desabafos & Histórias Anônimas", "Espaço acolhedor para compartilhar relatos, pedir conselhos e desabafar sem julgamentos.", "Apoio & Emoção", "Lock"),
-                ThemedRoom("sala-aberta-3", "Mundo Tech, IA & Curiosidades", "Conversas e novidades sobre tecnologia, inteligência artificial, internet, jogos e futuro.", "Tecnologia", "Terminal")
+                ThemedRoom("sala-aberta-1", "Lounge Principal (Bate-Papo Aberto)", "Espaço comunitário aberto para todos conversarem livremente sobre qualquer assunto de forma anônima.", "Bate-Papo Livre", "Sparkles", color = "#3b82f6", activeParticipantsCount = 0),
+                ThemedRoom("sala-aberta-2", "Desabafos & Histórias Anônimas", "Espaço acolhedor para compartilhar relatos, pedir conselhos e desabafar sem julgamentos.", "Apoio & Emoção", "Lock", color = "#ec4899", activeParticipantsCount = 0),
+                ThemedRoom("sala-aberta-3", "Mundo Tech, IA & Curiosidades", "Conversas e novidades sobre tecnologia, inteligência artificial, internet, jogos e futuro.", "Tecnologia", "Terminal", color = "#10b981", activeParticipantsCount = 0)
             )
         }
     }
