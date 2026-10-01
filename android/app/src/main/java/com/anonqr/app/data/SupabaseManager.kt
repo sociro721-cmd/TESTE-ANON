@@ -10,7 +10,6 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.gotrue.user.updateUser
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
@@ -117,9 +116,9 @@ object SupabaseManager {
             
             val trimmedNick = nick.trim()
 
-            // Update user metadata in Supabase Auth directly
+            // Update user metadata in Supabase Auth directly using correct SDK v2.5.0 DSL (data { ... })
             client.auth.updateUser {
-                userMetadata = buildJsonObject {
+                data {
                     put("nick", trimmedNick)
                     put("username", trimmedNick)
                 }
